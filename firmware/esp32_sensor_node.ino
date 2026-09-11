@@ -1,0 +1,56 @@
+// 智巡开源：ESP32 传感节点参考固件
+// 依赖：ArduinoJson、PubSubClient、DHT sensor library
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include <ArduinoJson.h>
+#include <DHT.h>
+
+#define DHT_PIN 4
+#define DHT_TYPE DHT22
+#define SMOKE_PIN 34
+#define BUZZER_PIN 18
+
+const char* WIFI_SSID = "YOUR_WIFI";
+const char* WIFI_PASSWORD = "YOUR_PASSWORD";
+const char* MQTT_HOST = "192.168.1.10";
+const char* NODE_ID = "SEN-02";
+
+WiFiClient wifiClient;
+PubSubClient mqtt(wifiClient);
+DHT dht(DHT_PIN, DHT_TYPE);
+
+void connectNetwork() {
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  while (WiFi.status() != WL_CONNECTED) delay(500);
+  mqtt.setServer(MQTT_HOST, 1883);
+  while (!mqtt.connected()) mqtt.connect(NODE_ID);
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(BUZZER_PIN, OUTPUT);
+  dht.begin();
+  connectNetwork();
+}
+
+void loop() {
+  if (!mqtt.connected()) connectNetwork();
+  mqtt.loop();
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+  int smokeRaw = analogRead(SMOKE_PIN);
+  bool danger = smokeRaw > 1800 || temperature > 45;
+  digitalWrite(BUZZER_PIN, danger ? HIGH : LOW); // 断网时同样执行本地告警
+
+  StaticJsonDocument<256> data;
+  data["nodeId"] = NODE_ID;
+  data["temperature"] = temperature;
+  data["humidity"] = humidity;
+  data["smokeRaw"] = smokeRaw;
+  data["danger"] = danger;
+  data["uptime"] = millis();
+  char payload[256];
+  serializeJson(data, payload);
+  mqtt.publish("zhixun/nodes/SEN-02/telemetry", payload, true);
+  delay(2000);
+}

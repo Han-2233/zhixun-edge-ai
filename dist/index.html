@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07111d" />
+  <meta name="description" content="智巡开源——基于边缘AI的多场景智能巡检与预警系统" />
+  <title>智巡开源 · 边缘AI巡检中心</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307111d'/%3E%3Cpath d='M32 8 53 18v14c0 13-8.5 21-21 25C19.5 53 11 45 11 32V18L32 8Z' fill='%2315d1a3'/%3E%3Cpath d='m21 33 7 7 15-17' fill='none' stroke='%2307111d' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./styles.css" />
+  <style>@keyframes fade{from{transform:translateY(5px)}}</style>
+</head>
+<body>
+  <div class="noise"></div>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">巡</div>
+      <div><strong>智巡开源</strong><span>EDGE INSIGHT</span></div>
+    </div>
+    <nav aria-label="主导航">
+      <button class="nav-item active" data-target="overview"><span>⌁</span>实时总览</button>
+      <button class="nav-item" data-target="devices"><span>◇</span>设备节点</button>
+      <button class="nav-item" data-target="alerts"><span>△</span>告警中心</button>
+      <button class="nav-item" data-target="system"><span>◎</span>系统说明</button>
+    </nav>
+    <div class="edge-card">
+      <div class="edge-head"><span class="pulse-dot"></span>边缘节点在线</div>
+      <strong>EDGE-01</strong>
+      <small>推理延迟 <b id="latency">24</b> ms</small>
+      <div class="loadbar"><i id="loadBar"></i></div>
+      <small>核心负载 <b id="loadValue">38</b>%</small>
+    </div>
+    <footer>OPEN SOURCE · v1.0.0</footer>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">CAMPUS LAB · NODE 01</p>
+        <h1>智能巡检控制台</h1>
+      </div>
+      <div class="header-actions">
+        <div class="clock"><span id="date">—</span><strong id="time">—</strong></div>
+        <button id="demoBtn" class="primary-btn"><span></span>开始自动巡检</button>
+      </div>
+    </header>
+
+    <section id="overview" class="page active-page">
+      <div class="stats-grid">
+        <article class="stat-card accent"><div class="stat-top"><span>今日巡检</span><i>↗</i></div><strong id="inspectionCount">128</strong><small>较昨日 +12.8%</small></article>
+        <article class="stat-card"><div class="stat-top"><span>在线节点</span><i class="ok">●</i></div><strong>6<em>/ 6</em></strong><small>全部运行正常</small></article>
+        <article class="stat-card warning"><div class="stat-top"><span>待处理告警</span><i>!</i></div><strong id="alertCount">2</strong><small id="alertHint">1 项需优先处理</small></article>
+        <article class="stat-card"><div class="stat-top"><span>平均响应</span><i>⌁</i></div><strong>1.8<em> s</em></strong><small>端侧本地决策</small></article>
+      </div>
+
+      <div class="workspace-grid">
+        <article class="panel camera-panel">
+          <div class="panel-head">
+            <div><p class="eyebrow">LIVE VISION</p><h2>视觉巡检画面</h2></div>
+            <div class="segmented"><button class="active" data-mode="demo">演示画面</button><button data-mode="camera">本机摄像头</button></div>
+          </div>
+          <div class="vision-stage" id="visionStage">
+            <video id="camera" autoplay muted playsinline></video>
+            <canvas id="cameraCanvas"></canvas>
+            <div class="demo-scene" id="demoScene">
+              <div class="scan-line"></div><div class="corridor-line l1"></div><div class="corridor-line l2"></div>
+              <div class="device-shape d1"><i></i></div><div class="device-shape d2"><i></i></div>
+              <div class="detect-box"><span>人员活动</span><b id="confidence">96.4%</b></div>
+            </div>
+            <div class="vision-hud top-left"><span class="record-dot"></span>EDGE-01 / CAM-03</div>
+            <div class="vision-hud bottom-right" id="fps">25 FPS · 1080P</div>
+            <div class="privacy-tag">数据仅在本地处理</div>
+          </div>
+          <div class="vision-footer">
+            <div><span>识别模型</span><strong>YOLO-Edge Nano</strong></div>
+            <div><span>当前目标</span><strong id="targetCount">1 个</strong></div>
+            <div><span>运行状态</span><strong class="green">实时推理中</strong></div>
+          </div>
+        </article>
+
+        <article class="panel sensor-panel">
+          <div class="panel-head"><div><p class="eyebrow">SENSOR MATRIX</p><h2>环境感知</h2></div><button id="simulateAlert" class="ghost-btn">模拟异常</button></div>
+          <div class="sensor-list">
+            <div class="sensor-row"><div class="sensor-icon temp">°</div><div class="sensor-info"><span>环境温度</span><strong><b id="temperature">24.6</b> °C</strong></div><div class="spark" id="tempSpark"></div></div>
+            <div class="sensor-row"><div class="sensor-icon humidity">≈</div><div class="sensor-info"><span>空气湿度</span><strong><b id="humidity">48</b> %RH</strong></div><div class="spark blue" id="humidSpark"></div></div>
+            <div class="sensor-row"><div class="sensor-icon smoke">≋</div><div class="sensor-info"><span>烟雾浓度</span><strong><b id="smoke">18</b> ppm</strong></div><span class="safe-pill" id="smokeStatus">安全</span></div>
+            <div class="sensor-row"><div class="sensor-icon power">ϟ</div><div class="sensor-info"><span>设备功耗</span><strong><b id="power">12.8</b> W</strong></div><span class="trend">↓ 3.2%</span></div>
+          </div>
+          <div class="threshold"><div><span>多模态融合置信度</span><strong id="fusion">94%</strong></div><div class="ring" id="fusionRing"><span>AI</span></div></div>
+        </article>
+      </div>
+
+      <article class="panel event-panel">
+        <div class="panel-head"><div><p class="eyebrow">EVENT STREAM</p><h2>实时事件</h2></div><button id="clearEvents" class="text-btn">清除已读</button></div>
+        <div class="event-table" id="eventTable">
+          <div class="event-row header"><span>时间</span><span>节点</span><span>事件类型</span><span>识别结果</span><span>状态</span></div>
+          <div class="event-row"><span>10:42:18</span><span>CAM-03</span><span>视觉识别</span><span>实验室人员进入</span><span><i class="tag info">已记录</i></span></div>
+          <div class="event-row"><span>10:38:05</span><span>SEN-02</span><span>环境监测</span><span>温湿度处于正常范围</span><span><i class="tag success">正常</i></span></div>
+          <div class="event-row unread"><span>10:31:44</span><span>CAM-01</span><span>区域入侵</span><span>非开放时段检测到活动</span><span><i class="tag danger">待处理</i></span></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="devices" class="page">
+      <div class="section-intro"><p class="eyebrow">DEVICE TOPOLOGY</p><h2>设备节点</h2><p>所有节点通过 MQTT 接入，网络中断时仍可在端侧独立完成检测与告警。</p></div>
+      <div class="device-grid" id="deviceGrid"></div>
+    </section>
+
+    <section id="alerts" class="page">
+      <div class="section-intro"><p class="eyebrow">ALERT WORKFLOW</p><h2>告警中心</h2><p>从异常发现、规则复核到人工处置，形成完整可追溯闭环。</p></div>
+      <div id="alertList" class="alert-list"></div>
+    </section>
+
+    <section id="system" class="page">
+      <div class="section-intro"><p class="eyebrow">OPEN ARCHITECTURE</p><h2>系统说明</h2><p>面向校园实验室、机房和仓储场景的低成本开源边缘智能方案。</p></div>
+      <div class="architecture">
+        <div class="arch-node"><span>01</span><strong>感知层</strong><p>摄像头、温湿度、烟雾与电流传感器采集现场信息。</p></div><b>→</b>
+        <div class="arch-node"><span>02</span><strong>边缘层</strong><p>目标检测与规则引擎在本地运行，降低延迟并保护隐私。</p></div><b>→</b>
+        <div class="arch-node"><span>03</span><strong>平台层</strong><p>Web 看板汇总状态、推送告警并保存事件处置记录。</p></div>
+      </div>
+      <div class="feature-grid"><article><b>低成本</b><p>ESP32 + 常见传感器即可构建节点，模块可按需组合。</p></article><article><b>隐私友好</b><p>视频默认不上传，只同步结构化事件与匿名统计。</p></article><article><b>断网可用</b><p>边缘节点离线执行规则，恢复网络后自动同步事件。</p></article><article><b>完全开源</b><p>硬件接口、通信协议和管理端均采用开放设计。</p></article></div>
+    </section>
+  </main>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
