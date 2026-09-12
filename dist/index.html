@@ -8,7 +8,7 @@
   <title>智巡开源 · 边缘AI巡检中心</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307111d'/%3E%3Cpath d='M32 8 53 18v14c0 13-8.5 21-21 25C19.5 53 11 45 11 32V18L32 8Z' fill='%2315d1a3'/%3E%3Cpath d='m21 33 7 7 15-17' fill='none' stroke='%2307111d' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="./styles.css" />
-  <style>@keyframes fade{from{transform:translateY(5px)}}</style>
+  <style>@keyframes fade{from{transform:translateY(5px)}}.submission-panel{margin-top:14px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:18px}.submission-panel p{margin:5px 0 0;color:var(--muted);font-size:13px}.material-links{display:flex;gap:10px}.material-link{color:#052219;background:var(--green);text-decoration:none;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:700}.material-link.secondary{color:var(--text);background:#172b3d;border:1px solid var(--line)}@media(max-width:760px){.submission-panel{align-items:flex-start;flex-direction:column}.material-links{width:100%;flex-direction:column}.material-link{text-align:center}}</style>
 </head>
 <body>
   <div class="noise"></div>
@@ -112,13 +112,14 @@
     </section>
 
     <section id="system" class="page">
-      <div class="section-intro"><p class="eyebrow">OPEN ARCHITECTURE</p><h2>系统说明</h2><p>面向校园实验室、机房和仓储场景的低成本开源边缘智能方案。</p></div>
+      <div class="section-intro"><p class="eyebrow">OPEN RISC-V ARCHITECTURE</p><h2>系统说明</h2><p>面向校园实验室、机房和仓储场景的低成本 RISC-V 开源边缘智能方案。</p></div>
       <div class="architecture">
-        <div class="arch-node"><span>01</span><strong>感知层</strong><p>摄像头、温湿度、烟雾与电流传感器采集现场信息。</p></div><b>→</b>
-        <div class="arch-node"><span>02</span><strong>边缘层</strong><p>目标检测与规则引擎在本地运行，降低延迟并保护隐私。</p></div><b>→</b>
+        <div class="arch-node"><span>01</span><strong>RISC-V 感知层</strong><p>ESP32-C3 采集温湿度、烟雾与功耗数据，并通过 Wi-Fi 上报。</p></div><b>→</b>
+        <div class="arch-node"><span>02</span><strong>边缘 AI 层</strong><p>Milk-V Duo 256M 运行轻量视觉检测与融合规则，现场完成决策。</p></div><b>→</b>
         <div class="arch-node"><span>03</span><strong>平台层</strong><p>Web 看板汇总状态、推送告警并保存事件处置记录。</p></div>
       </div>
-      <div class="feature-grid"><article><b>低成本</b><p>ESP32 + 常见传感器即可构建节点，模块可按需组合。</p></article><article><b>隐私友好</b><p>视频默认不上传，只同步结构化事件与匿名统计。</p></article><article><b>断网可用</b><p>边缘节点离线执行规则，恢复网络后自动同步事件。</p></article><article><b>完全开源</b><p>硬件接口、通信协议和管理端均采用开放设计。</p></article></div>
+      <div class="feature-grid"><article><b>RISC-V 双节点</b><p>ESP32-C3 负责感知，Milk-V Duo 256M 负责边缘 AI 推理。</p></article><article><b>隐私友好</b><p>视频默认不上传，只同步结构化事件与匿名统计。</p></article><article><b>断网可用</b><p>边缘节点离线执行规则，恢复网络后自动同步事件。</p></article><article><b>完全开源</b><p>固件、硬件接口、通信协议和管理端均采用开放设计。</p></article></div>
+      <div class="panel submission-panel"><div><b>参赛材料</b><p>项目介绍与核心功能演示均可公开访问。</p></div><div class="material-links"><a class="material-link secondary" href="./assets/zhixun-project-introduction.pdf" target="_blank" rel="noopener">查看介绍 PDF</a><a class="material-link" href="./assets/zhixun-demo.webm" target="_blank" rel="noopener">播放演示视频</a></div></div>
     </section>
   </main>
   <div id="toast" role="status" aria-live="polite"></div>
